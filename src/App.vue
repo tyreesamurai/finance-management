@@ -10,10 +10,10 @@ import AllocationPanel from './components/panels/AllocationPanel.vue'
 import MonthlyPanel from './components/panels/MonthlyPanel.vue'
 import MonthThreePanel from './components/panels/MonthThreePanel.vue'
 
-const TOTAL_CREDIT_CARD_DEBT = 13500
+const TOTAL_CREDIT_CARD_DEBT = 12500
 
 const incomes = ref([
-  { source: 'work', amount: 5175.37 },
+  { source: 'work', amount: 5219 },
   { source: 'military', amount: 426.3 },
 ])
 
@@ -102,7 +102,7 @@ const accounts = computed(() => ({
         :addExpense="addExpense"
       />
       <MonthlyPanel :allocation="allocation" :accounts="accounts" />
-      <MonthOnePanel :accounts="accounts" :incomes="incomes" :expenses="expenses" />
+      <MonthOnePanel value="september" :accounts="accounts" :incomes="incomes" :expenses="expenses" />
       <TabPanel value="october">October</TabPanel>
       <MonthThreePanel :accounts="accounts" />
       <TabPanel value="december">December</TabPanel>

@@ -12,7 +12,7 @@ defineProps<{
 </script>
 
 <template>
-  <TabPanel value="september">
+  <TabPanel value="november">
     <h1>Month Three</h1>
     <h2>
       This month your checking account is going to go up {{ accounts.checkings.amount }} dollars
