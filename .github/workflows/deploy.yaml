@@ -33,6 +33,11 @@ jobs:
           docker push $REGISTRY/${IMAGE_NAME}:$GITHUB_SHA
           docker push $REGISTRY/${IMAGE_NAME}:latest
 
+      - name: Start Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TS_AUTHKEY }}
+
       - name: Prepare SSH directory
         run: |
           mkdir -p ~/.ssh
@@ -59,11 +64,6 @@ jobs:
           set -x
           ssh -vvv -i key.pem -o BatchMode=yes -o StrictHostKeyChecking=yes \
           deploy@${{ secrets.DEPLOY_HOST }} "echo ok && whoami && hostname"
-
-      - name: Start Tailscale
-        uses: tailscale/github-action@v2
-        with:
-          authkey: ${{ secrets.TS_AUTHKEY }}
 
       - name: Deploy over SSH via Tailscale
         uses: appleboy/ssh-action@v1.2.0
