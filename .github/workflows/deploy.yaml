@@ -33,6 +33,13 @@ jobs:
           docker push $REGISTRY/${IMAGE_NAME}:$GITHUB_SHA
           docker push $REGISTRY/${IMAGE_NAME}:latest
 
+      - name: Write SSH Key
+        run: |
+          umask 177
+          cat > key.pem <<'KEY'
+        ${{ secrets.DEPLOY_KEY }}
+        KEY
+
       - name: Start Tailscale
         uses: tailscale/github-action@v2
         with:
@@ -43,7 +50,9 @@ jobs:
         with:
           host: ${{ secrets.DEPLOY_HOST }} # Tailscale IP
           username: deploy
-          key: ${{ secrets.DEPLOY_KEY }} # Private key (PEM) matching authorized_keys on server
+          key_path: key.pem
+          script_stop: true
+          debug: true
           script: |
             set -e
             cd /srv/apps/finance-management
