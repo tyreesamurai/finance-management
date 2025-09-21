@@ -36,9 +36,19 @@ jobs:
       - name: Write SSH Key
         run: |
           umask 177
-          cat > key.pem <<'KEY'
+          cat > key.b64 <<'KEY'
           ${{ secrets.DEPLOY_KEY }}
           KEY
+          base64 -d key.b64 > key.pem
+          rm -f key.b64
+
+      - name: Add server to known_hosts
+        run: |
+          ssh-keyscan -T 10 ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Quick SSH self-test
+        run: |
+          ssh -i key.pem -o BatchMode=yes -o StrictHostKeyChecking=yes deploy@${{ secrets.DEPLOY_HOST }} "echo ok && whoami && hostname"
 
       - name: Start Tailscale
         uses: tailscale/github-action@v2
