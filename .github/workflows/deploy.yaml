@@ -3,73 +3,13 @@ on:
   push:
     branches: ["main"]
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: tyreesamurai/finance-management
-
 jobs:
-  docker:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build image
-        run: |
-          docker build -t $REGISTRY/${IMAGE_NAME}:$GITHUB_SHA .
-          docker tag  $REGISTRY/${IMAGE_NAME}:$GITHUB_SHA $REGISTRY/${IMAGE_NAME}:latest
-
-      - name: Push image
-        run: |
-          docker push $REGISTRY/${IMAGE_NAME}:$GITHUB_SHA
-          docker push $REGISTRY/${IMAGE_NAME}:latest
-
-      - name: Start Tailscale
-        uses: tailscale/github-action@v2
-        with:
-          authkey: ${{ secrets.TS_AUTHKEY }}
-
-      - name: Prepare SSH directory
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-
-      - name: Write SSH key (plain, not base64)
-        run: |
-          umask 177
-          cat > key.pem <<'KEY'
-          ${{ secrets.DEPLOY_KEY }}
-          KEY
-          # sanity: file exists & non-zero
-          stat -c '%n %s bytes' key.pem
-          # optional: print fingerprint derived from private key (validates format)
-          ssh-keygen -lf <(ssh-keygen -yf key.pem) >/dev/null
-
-      - name: Add server to known_hosts
-        run: |
-          ssh-keyscan -T 10 ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
-      - name: Deploy over SSH via Tailscale
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DEPLOY_HOST }} # Tailscale IP
-          username: deploy
-          key_path: key.pem
-          script_stop: true
-          debug: true
-          script: |
-            set -e
-            cd /srv/apps/finance-management
-            docker pull ghcr.io/${{ env.IMAGE_NAME }}:latest
-            docker compose up -d
-            docker image prune -f
+  kickoff-template:
+    uses: tyreesamurai/ci-templates/.github/workflows/deploy.yml@main
+    with:
+      image_name: tyreesamurai/finance-management
+      service_dir: /srv/apps/finance-management
+    secrets:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      TS_AUTHKEY: ${{ secrets.TS_AUTHKEY }}
