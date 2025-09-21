@@ -46,7 +46,7 @@ jobs:
           KEY
           base64 -d key.b64 > key.pem
           rm -f key.b64
-          start -c '%n %s bytes' key.pem
+          stat -c '%n %s bytes' key.pem
           ssh-keygen -lf key.pem >/dev/null
 
       - name: Add server to known_hosts
