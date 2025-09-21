@@ -46,15 +46,19 @@ jobs:
           KEY
           base64 -d key.b64 > key.pem
           rm -f key.b64
+          start -c '%n %s bytes' key.pem
+          ssh-keygen -lf key.pem >/dev/null
 
       - name: Add server to known_hosts
         run: |
           ssh-keyscan -T 10 ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      - name: Quick SSH self-test
+      - name: Quick SSH self-test (verbose)
         run: |
-          ssh -i key.pem -o BatchMode=yes -o StrictHostKeyChecking=yes deploy@${{ secrets.DEPLOY_HOST }} "echo ok && whoami && hostname"
+          set -x
+          ssh -vvv -i key.pem -o BatchMode=yes -o StrictHostKeyChecking=yes \
+          deploy@${{ secrets.DEPLOY_HOST }} "echo ok && whoami && hostname"
 
       - name: Start Tailscale
         uses: tailscale/github-action@v2
