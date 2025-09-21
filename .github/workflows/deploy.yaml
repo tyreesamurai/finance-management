@@ -1,0 +1,52 @@
+name: build-and-deploy
+on:
+  push:
+    branches: ["main"]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: tyreesamurai/finance-management
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        run: |
+          docker build -t $REGISTRY/${IMAGE_NAME}:$GITHUB_SHA .
+          docker tag  $REGISTRY/${IMAGE_NAME}:$GITHUB_SHA $REGISTRY/${IMAGE_NAME}:latest
+
+      - name: Push image
+        run: |
+          docker push $REGISTRY/${IMAGE_NAME}:$GITHUB_SHA
+          docker push $REGISTRY/${IMAGE_NAME}:latest
+
+      - name: Start Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TS_AUTHKEY }}
+
+      - name: Deploy over SSH via Tailscale
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }} # Tailscale IP
+          username: deploy
+          key: ${{ secrets.DEPLOY_KEY }} # Private key (PEM) matching authorized_keys on server
+          script: |
+            set -e
+            cd /srv/apps/finance-management
+            docker pull ghcr.io/${{ env.IMAGE_NAME }}:latest
+            docker compose up -d
+            docker image prune -f
