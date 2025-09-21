@@ -43,16 +43,16 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
-      - name: Write SSH Key
+      - name: Write SSH key (plain, not base64)
         run: |
           umask 177
-          cat > key.b64 <<'KEY'
+          cat > key.pem <<'KEY'
           ${{ secrets.DEPLOY_KEY }}
           KEY
-          base64 -d key.b64 > key.pem
-          rm -f key.b64
+          # sanity: file exists & non-zero
           stat -c '%n %s bytes' key.pem
-          ssh-keygen -lf key.pem >/dev/null
+          # optional: print fingerprint derived from private key (validates format)
+          ssh-keygen -lf <(ssh-keygen -yf key.pem) >/dev/null
 
       - name: Add server to known_hosts
         run: |
@@ -62,8 +62,12 @@ jobs:
       - name: Quick SSH self-test (verbose)
         run: |
           set -x
-          ssh -vvv -i key.pem -o BatchMode=yes -o StrictHostKeyChecking=yes \
-          deploy@${{ secrets.DEPLOY_HOST }} "echo ok && whoami && hostname"
+          ssh -vvv \
+            -i key.pem \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            deploy@${{ secrets.DEPLOY_HOST }} "echo OK && whoami && hostname && id"
 
       - name: Deploy over SSH via Tailscale
         uses: appleboy/ssh-action@v1.2.0
