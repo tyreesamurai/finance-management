@@ -37,8 +37,8 @@ jobs:
         run: |
           umask 177
           cat > key.pem <<'KEY'
-        ${{ secrets.DEPLOY_KEY }}
-        KEY
+          ${{ secrets.DEPLOY_KEY }}
+          KEY
 
       - name: Start Tailscale
         uses: tailscale/github-action@v2
