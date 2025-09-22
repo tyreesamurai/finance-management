@@ -13,3 +13,4 @@ jobs:
     with:
       image_name: tyreesamurai/finance-management
       service_dir: /srv/apps/finance-management
+    secrets: inherit
