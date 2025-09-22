@@ -13,7 +13,3 @@ jobs:
     with:
       image_name: tyreesamurai/finance-management
       service_dir: /srv/apps/finance-management
-    secrets:
-      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-      TS_AUTHKEY: ${{ secrets.TS_AUTHKEY }}
