@@ -1,23 +1,25 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import TabPanel from 'primevue/tabpanel'
-import Chart from 'primevue/chart'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import Checkbox from 'primevue/checkbox'
+import Chart from "primevue/chart";
+import Checkbox from "primevue/checkbox";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import TabPanel from "primevue/tabpanel";
+import { computed, ref } from "vue";
 
 const props = defineProps<{
-  accounts: {
-    checkings: { label: string; amount: number }
-    savings: { label: string; amount: number }
-    brokerage: { label: string; amount: number }
-    creditCard: { label: string; amount: number }
-  },
-  incomes: { source: string; amount: number | null }[],
-  expenses: { name: string; amount: number | null ; from: string }[]
-}>()
+	accounts: {
+		checkings: { label: string; amount: number };
+		savings: { label: string; amount: number };
+		brokerage: { label: string; amount: number };
+		creditCard: { label: string; amount: number };
+	};
+	incomes: { source: string; amount: number | null }[];
+	expenses: { name: string; amount: number | null; from: string }[];
+}>();
 
-const localIncomes = computed(() => props.incomes.map(income => ({ ...income, checked: ref(false).value })))
+const localIncomes = computed(() =>
+	props.incomes.map((income) => ({ ...income, checked: ref(false).value })),
+);
 
 // const deductions = ref({
 //   checkings: 0,
@@ -34,7 +36,11 @@ const localIncomes = computed(() => props.incomes.map(income => ({ ...income, ch
       :data="{
         datasets: [
           {
-            data: [accounts.checkings.amount, accounts.savings.amount, accounts.brokerage.amount],
+            data: [
+              accounts.checkings.amount,
+              accounts.savings.amount,
+              accounts.brokerage.amount,
+            ],
           },
         ],
         labels: ['Checking', 'Savings', 'Investments'],
@@ -44,7 +50,7 @@ const localIncomes = computed(() => props.incomes.map(income => ({ ...income, ch
           tooltip: {
             callbacks: {
               label: function (context: any) {
-                return ` $${context.parsed}`
+                return ` $${context.parsed}`;
               },
             },
           },
@@ -74,9 +80,19 @@ const localIncomes = computed(() => props.incomes.map(income => ({ ...income, ch
       class="chart"
       :data="{
         datasets: [
-          { data: [accounts.checkings.amount, accounts.savings.amount, accounts.brokerage.amount] },
+          {
+            data: [
+              accounts.checkings.amount,
+              accounts.savings.amount,
+              accounts.brokerage.amount,
+            ],
+          },
         ],
-        labels: [accounts.checkings.label, accounts.savings.label, accounts.brokerage.label],
+        labels: [
+          accounts.checkings.label,
+          accounts.savings.label,
+          accounts.brokerage.label,
+        ],
       }"
     />
   </TabPanel>

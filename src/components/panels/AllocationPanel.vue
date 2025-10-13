@@ -1,40 +1,40 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import Chart from 'primevue/chart'
-import Button from 'primevue/button'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import InputText from 'primevue/inputtext'
-import InputNumber from 'primevue/inputnumber'
-import Dropdown from 'primevue/dropdown'
-import TabPanel from 'primevue/tabpanel'
+import Button from "primevue/button";
+import Chart from "primevue/chart";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import Dropdown from "primevue/dropdown";
+import InputNumber from "primevue/inputnumber";
+import InputText from "primevue/inputtext";
+import TabPanel from "primevue/tabpanel";
+import { computed, ref } from "vue";
 
 defineProps<{
-  incomes: { source: string; amount: number | null }[]
-  expenses: { name: string; amount: number | null; from: string }[]
-  addIncome: () => void
-  addExpense: () => void
-  monthlyIncome: number
-}>()
+	incomes: { source: string; amount: number | null }[];
+	expenses: { name: string; amount: number | null; from: string }[];
+	addIncome: () => void;
+	addExpense: () => void;
+	monthlyIncome: number;
+}>();
 
-const newIncome = ref({ source: '', amount: 0 })
-const newExpense = ref({ name: '', amount: 0, from: '' })
+const newIncome = ref({ source: "", amount: 0 });
+const newExpense = ref({ name: "", amount: 0, from: "" });
 
 const accountOptions = [
-  { label: 'Checking', value: 'checking' },
-  { label: 'Savings', value: 'savings' },
-  { label: 'Credit Card', value: 'creditCard' },
-]
+	{ label: "Checking", value: "checking" },
+	{ label: "Savings", value: "savings" },
+	{ label: "Credit Card", value: "creditCard" },
+];
 
-const savingAllocation = ref(25)
+const savingAllocation = ref(25);
 
-const investmentAllocation = ref(10)
+const investmentAllocation = ref(10);
 
 const allocation = computed(() => ({
-  savings: savingAllocation.value,
-  investments: investmentAllocation.value,
-  checking: 100 - (savingAllocation.value + investmentAllocation.value),
-}))
+	savings: savingAllocation.value,
+	investments: investmentAllocation.value,
+	checking: 100 - (savingAllocation.value + investmentAllocation.value),
+}));
 </script>
 
 <template>
@@ -42,7 +42,8 @@ const allocation = computed(() => ({
     <header class="section-header">
       <h4>Set your Monthly Allocation</h4>
       <p class="muted">
-        We'll set how your income is split into Savings, Investments, and Checking.
+        We'll set how your income is split into Savings, Investments, and
+        Checking.
       </p>
     </header>
 
@@ -50,7 +51,8 @@ const allocation = computed(() => ({
       <div class="card-head">
         <h5>Your Income</h5>
         <p class="muted">
-          Add each source of monthly income. We'll total it for you automatically.
+          Add each source of monthly income. We'll total it for you
+          automatically.
         </p>
 
         <!-- inputs in a small grid for alignment -->
@@ -79,7 +81,8 @@ const allocation = computed(() => ({
       <div class="card-head">
         <h5>Choose your Allocation</h5>
         <p class="muted">
-          Pick what % goes to Savings & Investments. The rest will land in Checking.
+          Pick what % goes to Savings & Investments. The rest will land in
+          Checking.
         </p>
       </div>
 
@@ -119,7 +122,11 @@ const allocation = computed(() => ({
           :data="{
             datasets: [
               {
-                data: [allocation.checking, allocation.savings, allocation.investments],
+                data: [
+                  allocation.checking,
+                  allocation.savings,
+                  allocation.investments,
+                ],
               },
             ],
             labels: ['Checking', 'Savings', 'Investments'],
@@ -129,7 +136,7 @@ const allocation = computed(() => ({
               tooltip: {
                 callbacks: {
                   label: function (context: any) {
-                    return ` ${context.parsed}%`
+                    return ` ${context.parsed}%`;
                   },
                 },
               },
@@ -142,7 +149,9 @@ const allocation = computed(() => ({
     <div class="card">
       <div class="card-head">
         <h5>Your Expenses</h5>
-        <p class="muted">Add recurring bills & choose which account pays each one.</p>
+        <p class="muted">
+          Add recurring bills & choose which account pays each one.
+        </p>
       </div>
 
       <div class="grid">

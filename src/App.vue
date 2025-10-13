@@ -1,84 +1,88 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import Tabs from 'primevue/tabs'
-import TabList from 'primevue/tablist'
-import Tab from 'primevue/tab'
-import TabPanels from 'primevue/tabpanels'
-import TabPanel from 'primevue/tabpanel'
-import MonthOnePanel from './components/panels/MonthOnePanel.vue'
-import AllocationPanel from './components/panels/AllocationPanel.vue'
-import MonthlyPanel from './components/panels/MonthlyPanel.vue'
-import MonthThreePanel from './components/panels/MonthThreePanel.vue'
+import Tab from "primevue/tab";
+import TabList from "primevue/tablist";
+import TabPanel from "primevue/tabpanel";
+import TabPanels from "primevue/tabpanels";
+import Tabs from "primevue/tabs";
+import { computed, ref } from "vue";
+import AllocationPanel from "./components/panels/AllocationPanel.vue";
+import MonthlyPanel from "./components/panels/MonthlyPanel.vue";
+import MonthOnePanel from "./components/panels/MonthOnePanel.vue";
+import MonthThreePanel from "./components/panels/MonthThreePanel.vue";
 
-const TOTAL_CREDIT_CARD_DEBT = 12500
+const TOTAL_CREDIT_CARD_DEBT = 12500;
 
 const incomes = ref([
-  { source: 'work', amount: 5219 },
-  { source: 'military', amount: 426.3 },
-])
+	{ source: "work", amount: 5219 },
+	{ source: "military", amount: 426.3 },
+]);
 
 const expenses = ref([
-  { name: 'rent', amount: 800, from: 'savings' },
-  { name: 'miscellaneous', amount: 1000, from: 'checking' },
-])
+	{ name: "rent", amount: 800, from: "savings" },
+	{ name: "miscellaneous", amount: 1000, from: "checking" },
+]);
 
-const newIncome = ref({ source: '', amount: 0 })
-const newExpense = ref({ name: '', amount: 0, from: '' })
+const newIncome = ref({ source: "", amount: 0 });
+const newExpense = ref({ name: "", amount: 0, from: "" });
 
 const addIncome = () => {
-  if (newIncome.value.source && newIncome.value.amount.toFixed(2)) {
-    incomes.value.push({ ...newIncome.value })
-    newIncome.value = { source: '', amount: 0 }
-  }
-}
+	if (newIncome.value.source && newIncome.value.amount.toFixed(2)) {
+		incomes.value.push({ ...newIncome.value });
+		newIncome.value = { source: "", amount: 0 };
+	}
+};
 
 const addExpense = () => {
-  if (newExpense.value.name && newExpense.value.amount && newExpense.value.from) {
-    expenses.value.push({ ...newExpense.value })
-    newExpense.value = { name: '', amount: 0, from: 'checking' }
-  }
-}
+	if (
+		newExpense.value.name &&
+		newExpense.value.amount &&
+		newExpense.value.from
+	) {
+		expenses.value.push({ ...newExpense.value });
+		newExpense.value = { name: "", amount: 0, from: "checking" };
+	}
+};
 
 const monthlyIncome = computed(() => {
-  if (!incomes.value) return 0
+	if (!incomes.value) return 0;
 
-  return incomes.value.reduce((acc, curr) => acc + Number(curr.amount), 0)
-})
+	return incomes.value.reduce((acc, curr) => acc + Number(curr.amount), 0);
+});
 
-const savingAllocation = ref(25)
+const savingAllocation = ref(25);
 
-const investmentAllocation = ref(10)
+const investmentAllocation = ref(10);
 
-const creditCardDebt = ref(TOTAL_CREDIT_CARD_DEBT)
+const creditCardDebt = ref(TOTAL_CREDIT_CARD_DEBT);
 
 const allocation = computed(() => ({
-  savings: savingAllocation.value,
-  investments: investmentAllocation.value,
-  checking: 100 - (savingAllocation.value + investmentAllocation.value),
-}))
+	savings: savingAllocation.value,
+	investments: investmentAllocation.value,
+	checking: 100 - (savingAllocation.value + investmentAllocation.value),
+}));
 
 function round(num: number) {
-  return Math.round(num * 100) / 100
+	return Math.round(num * 100) / 100;
 }
 
 const accounts = computed(() => ({
-  checkings: {
-    label: 'Checking',
-    amount: round((allocation.value.checking / 100) * monthlyIncome.value),
-  },
-  savings: {
-    label: 'Savings',
-    amount: round((allocation.value.savings / 100) * monthlyIncome.value),
-  },
-  brokerage: {
-    label: 'Investments',
-    amount: round((allocation.value.investments / 100) * monthlyIncome.value),
-  },
-  creditCard: {
-    label: 'Credit Card',
-    amount: creditCardDebt.value,
-  },
-}))
+	checkings: {
+		label: "Checking",
+		amount: round((allocation.value.checking / 100) * monthlyIncome.value),
+	},
+	savings: {
+		label: "Savings",
+		amount: round((allocation.value.savings / 100) * monthlyIncome.value),
+	},
+	brokerage: {
+		label: "Investments",
+		amount: round((allocation.value.investments / 100) * monthlyIncome.value),
+	},
+	creditCard: {
+		label: "Credit Card",
+		amount: creditCardDebt.value,
+	},
+}));
 </script>
 
 <template>
@@ -102,7 +106,12 @@ const accounts = computed(() => ({
         :addExpense="addExpense"
       />
       <MonthlyPanel :allocation="allocation" :accounts="accounts" />
-      <MonthOnePanel value="september" :accounts="accounts" :incomes="incomes" :expenses="expenses" />
+      <MonthOnePanel
+        value="september"
+        :accounts="accounts"
+        :incomes="incomes"
+        :expenses="expenses"
+      />
       <TabPanel value="october">October</TabPanel>
       <MonthThreePanel :accounts="accounts" />
       <TabPanel value="december">December</TabPanel>
