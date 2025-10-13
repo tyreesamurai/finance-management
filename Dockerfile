@@ -1,17 +1,17 @@
-# --- build ---
-FROM node:20-alpine AS build
-WORKDIR /app
-RUN corepack enable && corepack prepare pnpm@latest --activate
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
-COPY . .
-# IMPORTANT if you serve under /finances/: set base in vite.config.ts or:
-# RUN pnpm build -- --base=/finances/
-RUN pnpm build
+FROM oven/bun:1.3 AS build
 
-# --- run (Nginx serves static files) ---
+WORKDIR /app
+
+COPY bun.lock package.json ./
+
+RUN bun install --frozen-lockfile
+
+COPY . .
+
+RUN bun run build
+
 FROM nginx:1.27-alpine
-# write a tiny SPA config without needing a repo file
+
 RUN printf '%s\n' \
   'server {' \
   '  listen 80;' \
@@ -25,6 +25,8 @@ RUN printf '%s\n' \
   '    try_files $uri =404;' \
   '  }' \
   '}' > /etc/nginx/conf.d/default.conf
+
 COPY --from=build /app/dist /usr/share/nginx/html
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
