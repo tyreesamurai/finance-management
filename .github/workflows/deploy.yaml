@@ -8,9 +8,19 @@ permissions:
   packages: write
 
 jobs:
-  kickoff-template:
-    uses: tyreesamurai/ci-templates/.github/workflows/deploy.yml@main
-    with:
-      image_name: tyreesamurai/finance-management
-      service_dir: /srv/apps/finance-management
-    secrets: inherit
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build + push :latest
+        run: |
+          docker build -f "$DOCKERFILE" -t "$IMAGE:latest" "$CONTEXT"
+          docker push "$IMAGE:latest"

@@ -5,6 +5,7 @@ declare module "*.vue" {
 	const component: DefineComponent<
 		Record<string, unknown>,
 		Record<string, unknown>,
+		// biome-ignore lint/suspicious/noExplicitAny: Just let this one be any please
 		any
 	>;
 	export default component;

@@ -8,7 +8,7 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-RUN bun run type-check && bun run build --base=/finances/
+RUN bun run type-check && bun run build
 
 FROM nginx:1.27-alpine
 
