@@ -27,6 +27,6 @@ defineProps<{
       {{ accounts.brokerage.amount }} dollars
     </h2>
     <h1>Quick CI/CD Test</h1>
-    <h1>Literally from today</h1>
+    <h1>Hi / Please work !:)</h1>
   </TabPanel>
 </template>
